@@ -1,0 +1,12 @@
+{
+  "imports": {
+    "services/": "./src/services/",
+    "std/": "https://deno.land/std@0.202.0/",
+    "utils/": "./src/utils/",
+    "x/": "https://deno.land/x/"
+  },
+  "tasks": {
+    "dev": "deno run --allow-read --allow-run --allow-net --allow-write --watch src/index.ts",
+    "run": "deno run --allow-read --allow-env --allow-run --allow-net --allow-write ./src/index.ts"
+  }
+}
