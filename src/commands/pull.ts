@@ -14,7 +14,7 @@ export const pullCommand = new Command<
   void,
   void,
   {
-    me: boolean;
+    me: string;
     verbose: boolean;
     y: boolean;
   },
@@ -24,7 +24,7 @@ export const pullCommand = new Command<
   .example('Pull', 'dotenv-vault pull')
   .arguments('[environment:string] [filename:string]')
   .option(
-    '-m, --me',
+    '-m, --me [DOTENV_ME:string]',
     'Pass .env.me (DOTENV_ME) credential directly (rather than reading from .env.me file)',
     {
       default: false,

@@ -16,7 +16,7 @@ class AbortService {
     this.log = new LogService();
   }
 
-  error(msg: string, obj: ErrorInfo): void {
+  error(msg: string, obj: ErrorInfo, quit = false): void {
     this.log.plain(`${colors.red('x')} Aborted.`);
 
     if (obj.code) {
@@ -28,6 +28,10 @@ class AbortService {
     }
 
     console.error(msg);
+
+    if (quit) {
+      Deno.exit();
+    }
   }
 
   code(code: string): void {
@@ -43,104 +47,148 @@ class AbortService {
     Deno.exit();
   }
 
-  missingEnvVault(): void {
-    this.error(`Missing ${vars.vaultFilename} (${vars.vaultKey}).`, {
-      code: 'MISSING_DOTENV_VAULT',
-      ref: '',
-      suggestions: [`Run, ${colors.bold(`${vars.cli} new`)}`],
-    });
+  missingEnvVault(quit = false): void {
+    this.error(
+      `Missing ${vars.vaultFilename} (${vars.vaultKey}).`,
+      {
+        code: 'MISSING_DOTENV_VAULT',
+        ref: '',
+        suggestions: [`Run, ${colors.bold(`${vars.cli} new`)}`],
+      },
+      quit,
+    );
   }
 
-  emptyEnvVault(): void {
-    this.error(`Empty ${vars.vaultFilename} (${vars.vaultKey}).`, {
-      code: 'EMPTY_DOTENV_VAULT',
-      ref: '',
-      suggestions: [`Run, ${colors.bold(`${vars.cli} new`)}`],
-    });
+  emptyEnvVault(quit = false): void {
+    this.error(
+      `Empty ${vars.vaultFilename} (${vars.vaultKey}).`,
+      {
+        code: 'EMPTY_DOTENV_VAULT',
+        ref: '',
+        suggestions: [`Run, ${colors.bold(`${vars.cli} new`)}`],
+      },
+      quit,
+    );
   }
 
-  invalidEnvVault(): void {
-    this.error(`Invalid ${vars.vaultFilename} (${vars.vaultKey}).`, {
-      code: 'INVALID_DOTENV_VAULT',
-      ref: '',
-      suggestions: [`Run, ${colors.bold(`${vars.cli} new`)}`],
-    });
+  invalidEnvVault(quit = false): void {
+    this.error(
+      `Invalid ${vars.vaultFilename} (${vars.vaultKey}).`,
+      {
+        code: 'INVALID_DOTENV_VAULT',
+        ref: '',
+        suggestions: [`Run, ${colors.bold(`${vars.cli} new`)}`],
+      },
+      quit,
+    );
   }
 
-  existingEnvVault(): void {
-    this.error(`Existing ${vars.vaultFilename} (${vars.vaultKey}).`, {
-      code: 'EXISTING_DOTENV_VAULT',
-      ref: '',
-      suggestions: [
-        `Delete ${vars.vaultFilename} and then run, ${colors.bold(
-          `${vars.cli} new`,
-        )}`,
-      ],
-    });
+  existingEnvVault(quit = false): void {
+    this.error(
+      `Existing ${vars.vaultFilename} (${vars.vaultKey}).`,
+      {
+        code: 'EXISTING_DOTENV_VAULT',
+        ref: '',
+        suggestions: [
+          `Delete ${vars.vaultFilename} and then run, ${colors.bold(
+            `${vars.cli} new`,
+          )}`,
+        ],
+      },
+      quit,
+    );
   }
 
-  invalidEnvMe(): void {
-    this.error('Invalid .env.me (DOTENV_ME).', {
-      code: 'INVALID_DOTENV_ME',
-      ref: '',
-      suggestions: [`Run, ${colors.bold(`${vars.cli} login`)}`],
-    });
+  invalidEnvMe(quit = false): void {
+    this.error(
+      'Invalid .env.me (DOTENV_ME).',
+      {
+        code: 'INVALID_DOTENV_ME',
+        ref: '',
+        suggestions: [`Run, ${colors.bold(`${vars.cli} login`)}`],
+      },
+      quit,
+    );
   }
 
-  missingEnvMe(): void {
-    this.error('Missing .env.me (DOTENV_ME).', {
-      code: 'MISSING_DOTENV_ME',
-      ref: '',
-      suggestions: [`Run, ${colors.bold(`${vars.cli} login`)}`],
-    });
+  missingEnvMe(quit = false): void {
+    this.error(
+      'Missing .env.me (DOTENV_ME).',
+      {
+        code: 'MISSING_DOTENV_ME',
+        ref: '',
+        suggestions: [`Run, ${colors.bold(`${vars.cli} login`)}`],
+      },
+      quit,
+    );
   }
 
-  emptyEnvMe(): void {
-    this.error('Empty .env.me (DOTENV_ME).', {
-      code: 'EMPTY_DOTENV_ME',
-      ref: '',
-      suggestions: [`Run, ${colors.bold(`${vars.cli} login`)}`],
-    });
+  emptyEnvMe(quit = false): void {
+    this.error(
+      'Empty .env.me (DOTENV_ME).',
+      {
+        code: 'EMPTY_DOTENV_ME',
+        ref: '',
+        suggestions: [`Run, ${colors.bold(`${vars.cli} login`)}`],
+      },
+      quit,
+    );
   }
 
-  missingEnv(filename: string | any = '.env'): void {
-    this.error(`Missing ${filename}.`, {
-      code: 'MISSING_ENV_FILE',
-      ref: '',
-      suggestions: [
-        `Create it (touch ${filename}) and then try again. Or run, ${colors.bold(
-          `${vars.cli} pull`,
-        )}`,
-      ],
-    });
+  missingEnv(filename: string | any = '.env', quit = false): void {
+    this.error(
+      `Missing ${filename}.`,
+      {
+        code: 'MISSING_ENV_FILE',
+        ref: '',
+        suggestions: [
+          `Create it (touch ${filename}) and then try again. Or run, ${colors.bold(
+            `${vars.cli} pull`,
+          )}`,
+        ],
+      },
+      quit,
+    );
   }
 
-  emptyEnv(filename: string | any = '.env'): void {
-    this.error(`Empty ${filename}.`, {
-      code: 'EMPTY_ENV_FILE',
-      ref: '',
-      suggestions: [
-        `Populate ${filename} with values and then try again. Or run, ${colors.bold(
-          `${vars.cli} pull`,
-        )}`,
-      ],
-    });
+  emptyEnv(filename: string | any = '.env', quit = false): void {
+    this.error(
+      `Empty ${filename}.`,
+      {
+        code: 'EMPTY_ENV_FILE',
+        ref: '',
+        suggestions: [
+          `Populate ${filename} with values and then try again. Or run, ${colors.bold(
+            `${vars.cli} pull`,
+          )}`,
+        ],
+      },
+      quit,
+    );
   }
 
-  missingEnvKeys(): void {
-    this.error('Missing .env.keys file', {
-      code: 'MISSING_DOTENV_KEYS',
-      ref: '',
-      suggestions: [`Run, ${colors.bold(`${vars.cli} local build`)}`],
-    });
+  missingEnvKeys(quit = false): void {
+    this.error(
+      'Missing .env.keys file',
+      {
+        code: 'MISSING_DOTENV_KEYS',
+        ref: '',
+        suggestions: [`Run, ${colors.bold(`${vars.cli} local build`)}`],
+      },
+      quit,
+    );
   }
 
-  emptyEnvKeys(): void {
-    this.error('Empty .env.keys file.', {
-      code: 'EMPTY_DOTENV_KEYS',
-      ref: '',
-      suggestions: [`Run, ${colors.bold(`${vars.cli} local build`)}`],
-    });
+  emptyEnvKeys(quit = false): void {
+    this.error(
+      'Empty .env.keys file.',
+      {
+        code: 'EMPTY_DOTENV_KEYS',
+        ref: '',
+        suggestions: [`Run, ${colors.bold(`${vars.cli} local build`)}`],
+      },
+      quit,
+    );
   }
 }
 

@@ -1,4 +1,4 @@
-export function open(url: string): Promise<Deno.ChildProcess> {
+export function open(url: string): Deno.ChildProcess {
   const programAliases = {
     darwin: 'open',
     windows: 'explorer',

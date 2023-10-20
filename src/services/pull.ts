@@ -8,7 +8,7 @@ import { vars } from 'utils/vars.ts';
 interface PullServiceAttrs {
   environment?: string;
   filename?: string;
-  dotenvMe: boolean;
+  dotenvMe: string;
   verbose: boolean;
   yes: boolean;
 }
@@ -16,7 +16,7 @@ interface PullServiceAttrs {
 export class PullService {
   public environment?: string;
   public filename?: string;
-  public dotenvMe = false;
+  public dotenvMe?: string;
   public verbose = false;
   public log;
   public abort;
@@ -25,7 +25,7 @@ export class PullService {
   public login;
 
   constructor(attrs = {} as PullServiceAttrs) {
-    this.environment = attrs.environment;
+    this.environment = attrs?.environment;
     this.filename = attrs.filename;
     this.dotenvMe = attrs.dotenvMe;
     this.verbose = attrs.verbose;
@@ -100,11 +100,13 @@ export class PullService {
         }),
       });
       const json = await resp.json();
+
       const te = new TextEncoder();
-      const environment = json.data.environment;
-      const envName = json.data.envName;
-      const newData = te.encode(json.data.dotenv);
-      const newVaultData = te.encode(json.data.dotenvVault);
+      const jsonData = json.data || json;
+      const environment = jsonData?.environment;
+      const envName = jsonData?.envName;
+      const newData = te.encode(jsonData?.dotenv);
+      const newVaultData = te.encode(jsonData.dotenvVault);
       const outputFilename = this.displayFilename(envName);
 
       // backup current file to .previous
@@ -136,35 +138,14 @@ export class PullService {
         console.log(`${colors.green('[x]')} Error while pulling:`);
       }
 
-      let errorMessage = null;
-      let errorCode = 'PULL_ERROR';
-      let suggestions = [];
-
-      errorMessage = error;
-      if (error.response) {
-        errorMessage = error.response.data;
-        if (
-          error.response.data &&
-          error.response.data.errors &&
-          error.response.data.errors[0]
-        ) {
-          const error1 = error.response.data.errors[0];
-
-          errorMessage = error1.message;
-          if (error1.code) {
-            errorCode = error1.code;
-          }
-
-          if (error1.suggestions) {
-            suggestions = error1.suggestions;
-          }
-        }
-      }
+      const errorMessage = error.message || '';
+      const errorCode = 'PULL_ERROR';
+      const suggestions: string[] = [];
 
       this.abort.error(errorMessage, {
         code: errorCode,
         ref: '',
-        suggestions: suggestions,
+        suggestions,
       });
     }
   }
